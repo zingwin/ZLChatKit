@@ -39,7 +39,7 @@
     chatTableView.dataSource = self;
     chatTableView.backgroundColor = [UIColor clearColor];
     chatTableView.tableFooterView = [[UIView alloc] init];
-    chatTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    chatTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 //    chatTableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     lpgr.minimumPressDuration = .5;
