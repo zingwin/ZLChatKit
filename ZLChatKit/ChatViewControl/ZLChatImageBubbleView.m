@@ -15,6 +15,8 @@ NSString *const kRouterEventImageBubbleTapEventName = @"kRouterEventImageBubbleT
 {
     if (self = [super initWithFrame:frame]) {
         _imageView = [[UIImageView alloc] init];
+        _imageView.contentMode = UIViewContentModeScaleAspectFill;
+        _imageView.clipsToBounds = YES;
         [self addSubview:_imageView];
     }
     
