@@ -10,70 +10,54 @@
 
 #define CHAT_BUTTON_SIZE 60
 #define INSETS 8
+#define kmutilButtonWidth 80
 
 @implementation ZLMultiView
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code
-        [self setupSubviewsForType];
+        self.backgroundColor = [UIColor whiteColor];
+        
+        NSArray *ms = @[@"拍照",@"相册",@"位置",@"抖屏",@"微博"];
+        CGFloat space = (frame.size.width - (kmutilButtonWidth*3)) / 4.0f;
+        CGFloat offx = space;
+        CGFloat offy = 10;
+        
+        for(int i = 0 ;i<[ms count];i++){
+            offy = i / 3 * kmutilButtonWidth + 10*(i/3+1);
+            offx = i % 3 * kmutilButtonWidth + space*(i%3+1) ;
+            
+            UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(offx,offy, kmutilButtonWidth, kmutilButtonWidth)];
+            btn.layer.borderColor = [UIColor redColor].CGColor;
+            btn.layer.borderWidth = 1.0f;
+            btn.layer.cornerRadius = 5.0f;
+            [btn setTitle:ms[i] forState:UIControlStateNormal];
+            btn.titleLabel.font = [UIFont systemFontOfSize:14];
+            [btn setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+            btn.tag = 9090+i;
+            [btn addTarget:self action:@selector(mutilButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+            [self addSubview:btn];
+        }
     }
     return self;
 }
 
-- (void)setupSubviewsForType
+-(void)mutilButtonPressed:(UIButton*)sender
 {
-    self.backgroundColor = [UIColor clearColor];
-    CGFloat insets = (self.frame.size.width - 4 * CHAT_BUTTON_SIZE) / 5;
-    
-    _photoButton =[UIButton buttonWithType:UIButtonTypeCustom];
-    [_photoButton setFrame:CGRectMake(insets, 10, CHAT_BUTTON_SIZE , CHAT_BUTTON_SIZE)];
-    [_photoButton setImage:[UIImage imageNamed:@"chatBar_colorMore_photo"] forState:UIControlStateNormal];
-    [_photoButton setImage:[UIImage imageNamed:@"chatBar_colorMore_photoSelected"] forState:UIControlStateHighlighted];
-    [_photoButton addTarget:self action:@selector(photoAction) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:_photoButton];
-    
-    _locationButton =[UIButton buttonWithType:UIButtonTypeCustom];
-    [_locationButton setFrame:CGRectMake(insets * 2 + CHAT_BUTTON_SIZE, 10, CHAT_BUTTON_SIZE , CHAT_BUTTON_SIZE)];
-    [_locationButton setImage:[UIImage imageNamed:@"chatBar_colorMore_location"] forState:UIControlStateNormal];
-    [_locationButton setImage:[UIImage imageNamed:@"chatBar_colorMore_locationSelected"] forState:UIControlStateHighlighted];
-    [_locationButton addTarget:self action:@selector(locationAction) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:_locationButton];
-    
-    _takePicButton =[UIButton buttonWithType:UIButtonTypeCustom];
-    [_takePicButton setFrame:CGRectMake(insets * 3 + CHAT_BUTTON_SIZE * 2, 10, CHAT_BUTTON_SIZE , CHAT_BUTTON_SIZE)];
-    [_takePicButton setImage:[UIImage imageNamed:@"chatBar_colorMore_camera"] forState:UIControlStateNormal];
-    [_takePicButton setImage:[UIImage imageNamed:@"chatBar_colorMore_cameraSelected"] forState:UIControlStateHighlighted];
-    [_takePicButton addTarget:self action:@selector(takePicAction) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:_takePicButton];
-    
-    
-    _videoButton =[UIButton buttonWithType:UIButtonTypeCustom];
-    [_videoButton setFrame:CGRectMake(insets * 4 + CHAT_BUTTON_SIZE * 3, 10, CHAT_BUTTON_SIZE , CHAT_BUTTON_SIZE)];
-    [_videoButton setImage:[UIImage imageNamed:@"chatBar_colorMore_video"] forState:UIControlStateNormal];
-    [_videoButton setImage:[UIImage imageNamed:@"chatBar_colorMore_videoSelected"] forState:UIControlStateHighlighted];
-    [_videoButton addTarget:self action:@selector(takeVideoAction) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:_videoButton];
-    
-//    CGRect frame = self.frame;
-//    if (type == ChatMoreTypeChat) {
-//        frame.size.height = 150;
-//        
-//      
-//    }
-//    else if (type == ChatMoreTypeGroupChat)
-//    {
-//        frame.size.height = 80;
-//    }
-//    self.frame = frame;
-    
-    _audioCallButton =[UIButton buttonWithType:UIButtonTypeCustom];
-    [_audioCallButton setFrame:CGRectMake(insets, 10 * 2 + CHAT_BUTTON_SIZE, CHAT_BUTTON_SIZE , CHAT_BUTTON_SIZE)];
-    [_audioCallButton setImage:[UIImage imageNamed:@"chatBar_colorMore_video"] forState:UIControlStateNormal];
-    [_audioCallButton setImage:[UIImage imageNamed:@"chatBar_colorMore_videoSelected"] forState:UIControlStateHighlighted];
-    [_audioCallButton addTarget:self action:@selector(takeAudioCallAction) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:_audioCallButton];
+    switch (sender.tag) {
+        case 9090+0:
+        {
+            NSLog(@"拍照被点击了");
+        }
+            break;
+        case 9090+1:
+        {
+        }
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark - action
