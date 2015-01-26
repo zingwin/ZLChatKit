@@ -52,7 +52,6 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
 {
     [super layoutSubviews];
     
-    [_timestampLabel setFrame:CGRectMake(0, 0,self.bounds.size.width, kTimestampHeight)];
     CGRect frame = _headImageView.frame;
     frame.origin.x = _messageModel.isSender ? (self.bounds.size.width - _headImageView.frame.size.width - HEAD_PADDING) : HEAD_PADDING;
     frame.origin.y = _timestampLabel.frame.size.height;
@@ -106,6 +105,7 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
         bubbleFrame.origin.x = HEAD_PADDING * 2 + HEAD_SIZE;
         _bubbleView.frame = bubbleFrame;
     }
+
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
@@ -115,8 +115,14 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
     // Configure the view for the selected state
 }
 
-#pragma mark - setter
 
+- (void)configureCellWithMessage:(MessageModel*)message displaysTimestamp:(BOOL)displayts
+{
+    [_timestampLabel setFrame:CGRectMake(0, 0,self.bounds.size.width,displayts?kTimestampHeight:0)];
+    
+    self.messageModel = message;
+}
+#pragma mark - setter
 - (void)setMessageModel:(MessageModel *)messageModel
 {
     _messageModel = messageModel;
@@ -306,14 +312,13 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
     return HEAD_SIZE;
 }
 
-+ (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath withObject:(MessageModel *)model
++ (CGFloat)cellHeightForRowAtIndexPath:(NSIndexPath *)indexPath withObject:(MessageModel *)model
 {
     NSInteger bubbleHeight = [self bubbleViewHeightForMessageModel:model];
     NSInteger headHeight = HEAD_PADDING * 2 + HEAD_SIZE;
     if (model.isChatGroup && !model.isSender) {
         headHeight += NAME_LABEL_HEIGHT;
     }
-    return MAX(headHeight, bubbleHeight) + CELLPADDING + kTimestampHeight;
+    return MAX(headHeight, bubbleHeight) + CELLPADDING;
 }
-
 @end

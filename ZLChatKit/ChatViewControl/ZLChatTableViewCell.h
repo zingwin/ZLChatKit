@@ -28,7 +28,13 @@
 #define SEND_STATUS_SIZE 20 // 发送状态View的Size
 #define ACTIVTIYVIEW_BUBBLE_PADDING 5 // 菊花和bubbleView之间的间距
 
+//@protocol ZLChatTableViewCellDelegate <NSObject>
+//-(BOOL)isShowTimestamp:(NSIndexPath*)indexPath;  //default : 显示时间戳
+//@end
+
 @interface ZLChatTableViewCell : UITableViewCell
+//@property(nonatomic,assign) id<ZLChatTableViewCellDelegate> delegate;
+
 @property (nonatomic, strong) MessageModel *messageModel;
 
 @property(nonatomic,strong) UILabel *timestampLabel;
@@ -42,8 +48,10 @@
 @property (nonatomic, strong) UIButton *retryButton;
 
 - (id)initWithMessageModel:(MessageModel *)model reuseIdentifier:(NSString *)reuseIdentifier;
-- (void)setupSubviewsForMessageModel:(MessageModel *)model;
+//- (void)setupSubviewsForMessageModel:(MessageModel *)model;
+- (void)configureCellWithMessage:(MessageModel*)message displaysTimestamp:(BOOL)displayts;
 
++ (CGFloat)cellHeightForRowAtIndexPath:(NSIndexPath *)indexPath withObject:(MessageModel *)model;
 + (NSString *)cellIdentifierForMessageModel:(MessageModel *)model;
-+ (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath withObject:(MessageModel *)model;
+
 @end

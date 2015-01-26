@@ -7,6 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+typedef NS_ENUM(NSInteger, RecordStatus){
+    RS_StartRecord = 0,
+    RS_CancelRecord,
+    RS_StopRecord,
+};
 
 @interface ZLRecordAnimationView : UIView
 // 录音按钮按下

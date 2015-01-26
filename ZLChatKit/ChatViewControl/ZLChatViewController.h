@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+@protocol ZLChatViewControllerDelegate<NSObject>
+//是否显示时间戳
+- (BOOL)shouldDisplayTimestampForRowAtIndexPath:(NSIndexPath *)indexPath;
+@end
 
 @interface ZLChatViewController : UIViewController
-
+@property(nonatomic,assign) id<ZLChatViewControllerDelegate> delegate;
 @end

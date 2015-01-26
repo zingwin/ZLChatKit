@@ -21,30 +21,32 @@
 
 @implementation ZLChatViewController
 @synthesize chatTableView,chatToolBar,messagesArr;
+@synthesize delegate;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
    
     messagesArr = [[NSMutableArray alloc]  init];
     _messageQueue = dispatch_queue_create("com.weibo.zwin", NULL);
-    
+
     chatToolBar = [[ZLInputToolView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - [ZLInputToolView defaultHeight], self.view.frame.size.width, [ZLInputToolView defaultHeight])];
     chatToolBar.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
     chatToolBar.delegate = self;
     [self.view addSubview:self.chatToolBar];
     
-    chatTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - self.chatToolBar.frame.size.height) style:UITableViewStylePlain];
+    chatTableView = [[UITableView alloc] initWithFrame:CGRectMake(0,0, self.view.frame.size.width, self.view.frame.size.height - self.chatToolBar.frame.size.height-64) style:UITableViewStylePlain];
     chatTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     chatTableView.delegate = self;
     chatTableView.dataSource = self;
     chatTableView.backgroundColor = [UIColor clearColor];
     chatTableView.tableFooterView = [[UIView alloc] init];
-    chatTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    chatTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 //    chatTableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     lpgr.minimumPressDuration = .5;
     [chatTableView addGestureRecognizer:lpgr];
     [self.view addSubview:self.chatTableView];
+    [self.view bringSubviewToFront:chatToolBar];
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(keyBoardHidden)];
     [self.view addGestureRecognizer:tap];
@@ -93,6 +95,11 @@
     [self.view bringSubviewToFront:recordView];
     
     NSLog(@"开始录音");
+}
+- (void)didFinishRecoingVoiceAction:(UIView *)recordView
+{
+    NSLog(@"完成录音");
+    
 }
 - (void)didChangeFrameToHeight:(CGFloat)toHeight
 {
@@ -175,14 +182,24 @@
         cell.backgroundColor = [UIColor clearColor];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-    cell.messageModel = model;
+    BOOL displayTimestamp = YES;
+    if ([self.delegate respondsToSelector:@selector(shouldDisplayTimestampForRowAtIndexPath:)]) {
+        displayTimestamp = [self.delegate shouldDisplayTimestampForRowAtIndexPath:indexPath];
+    }
+    [cell configureCellWithMessage:model displaysTimestamp:displayTimestamp];
     
     return cell;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSObject *obj = [self.messagesArr objectAtIndex:indexPath.row];
-    return [ZLChatTableViewCell tableView:tableView heightForRowAtIndexPath:indexPath withObject:(MessageModel *)obj];
+    MessageModel *message = [self.messagesArr objectAtIndex:indexPath.row];
+    CGFloat cellHeight = 0;
+    BOOL displayTimestamp = YES;
+    if ([self.delegate respondsToSelector:@selector(shouldDisplayTimestampForRowAtIndexPath:)]) {
+        displayTimestamp = [self.delegate shouldDisplayTimestampForRowAtIndexPath:indexPath];
+    }
+    cellHeight = [ZLChatTableViewCell cellHeightForRowAtIndexPath:indexPath withObject:message];
+    return cellHeight + (displayTimestamp?kTimestampHeight:0);
 }
 
 #pragma mark - private

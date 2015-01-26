@@ -91,7 +91,6 @@
 @end
 
 @protocol ZLInputToolViewDelegate <NSObject>
-
 @optional
 
 /**

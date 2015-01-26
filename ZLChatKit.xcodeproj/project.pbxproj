@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D88D0C01A760547000AA57D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D88D0BF1A760547000AA57D /* ViewController.m */; };
 		1DA3A4311A6FEE4000570D17 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA3A4301A6FEE4000570D17 /* main.m */; };
 		1DA3A4341A6FEE4000570D17 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA3A4331A6FEE4000570D17 /* AppDelegate.m */; };
 		1DA3A4371A6FEE4000570D17 /* ZLChatKit.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1DA3A4351A6FEE4000570D17 /* ZLChatKit.xcdatamodeld */; };
@@ -231,6 +232,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1D88D0BE1A760547000AA57D /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		1D88D0BF1A760547000AA57D /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		1DA3A42B1A6FEE4000570D17 /* ZLChatKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZLChatKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DA3A42F1A6FEE4000570D17 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1DA3A4301A6FEE4000570D17 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -519,6 +522,8 @@
 				1DA3A4571A6FEE8D00570D17 /* InputToolView */,
 				1DA3A4321A6FEE4000570D17 /* AppDelegate.h */,
 				1DA3A4331A6FEE4000570D17 /* AppDelegate.m */,
+				1D88D0BE1A760547000AA57D /* ViewController.h */,
+				1D88D0BF1A760547000AA57D /* ViewController.m */,
 				1DA3A43B1A6FEE4000570D17 /* Main.storyboard */,
 				1DA3A43E1A6FEE4000570D17 /* Images.xcassets */,
 				1DA3A4401A6FEE4000570D17 /* LaunchScreen.xib */,
@@ -1200,6 +1205,7 @@
 				1DB14AFA1A709BD500EA88D9 /* BaseEmojiBoard.m in Sources */,
 				1DA3A4701A6FF1D800570D17 /* EmojiEmoticons.m in Sources */,
 				1DB14BEE1A70D8E800EA88D9 /* ZLChatAudioBubbleView.m in Sources */,
+				1D88D0C01A760547000AA57D /* ViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
