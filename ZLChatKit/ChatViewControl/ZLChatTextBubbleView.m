@@ -28,6 +28,7 @@ NSString *const kRouterEventTextURLTapEventName = @"kRouterEventTextURLTapEventN
         textLabel.textAlignment = NSTextAlignmentLeft;
         textLabel.backgroundColor = [UIColor clearColor];
         textLabel.isNeedAtAndPoundSign = YES;
+        textLabel.disableThreeCommon = YES;
         textLabel.customEmojiRegex = @"\\[[a-zA-Z0-9\\u4e00-\\u9fa5]+\\]";
         textLabel.customEmojiPlistName = @"expressionImage_custom";
         [self addSubview:textLabel];

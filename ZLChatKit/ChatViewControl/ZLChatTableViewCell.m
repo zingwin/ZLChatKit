@@ -66,7 +66,7 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
         bubbleFrame.origin.y = self.headImageView.frame.origin.y;
         // 菊花状态 （因不确定菊花具体位置，要在子类中实现位置的修改）
         switch (self.messageModel.status) {
-            case eMessageDeliveryState_Delivering:
+            case MessageDeliveryState_Delivering:
             {
                 [_activityView setHidden:NO];
                 [_retryButton setHidden:YES];
@@ -74,14 +74,14 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
                 [_activtiy startAnimating];
             }
                 break;
-            case eMessageDeliveryState_Delivered:
+            case MessageDeliveryState_Delivered:
             {
                 [_activtiy stopAnimating];
                 [_activityView setHidden:YES];
                 
             }
                 break;
-            case eMessageDeliveryState_Failure:
+            case MessageDeliveryState_Failure:
             {
                 [_activityView setHidden:NO];
                 [_activtiy stopAnimating];
@@ -192,27 +192,27 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
 - (ZLChatBaseBubbleView *)bubbleViewForMessageModel:(MessageModel *)messageModel
 {
     switch (messageModel.type) {
-        case eMessageBodyType_Text:
+        case MessageBodyType_Text:
         {
             return [[ZLChatTextBubbleView alloc] init];
         }
             break;
-        case eMessageBodyType_Image:
+        case MessageBodyType_Image:
         {
             return [[ZLChatImageBubbleView alloc] init];
         }
             break;
-        case eMessageBodyType_Voice:
+        case MessageBodyType_Voice:
         {
             return [[ZLChatAudioBubbleView alloc] init];
         }
             break;
-        case eMessageBodyType_Location:
+        case MessageBodyType_Location:
         {
             return [[ZLChatBaseBubbleView alloc] init];
         }
             break;
-        case eMessageBodyType_Video:
+        case MessageBodyType_Video:
         {
             return [[ZLChatBaseBubbleView alloc] init];
         }
@@ -244,27 +244,27 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
     }
     
     switch (model.type) {
-        case eMessageBodyType_Text:
+        case MessageBodyType_Text:
         {
             identifier = [identifier stringByAppendingString:@"Text"];
         }
             break;
-        case eMessageBodyType_Image:
+        case MessageBodyType_Image:
         {
             identifier = [identifier stringByAppendingString:@"Image"];
         }
             break;
-        case eMessageBodyType_Voice:
+        case MessageBodyType_Voice:
         {
             identifier = [identifier stringByAppendingString:@"Audio"];
         }
             break;
-        case eMessageBodyType_Location:
+        case MessageBodyType_Location:
         {
             identifier = [identifier stringByAppendingString:@"Location"];
         }
             break;
-        case eMessageBodyType_Video:
+        case MessageBodyType_Video:
         {
             identifier = [identifier stringByAppendingString:@"Video"];
         }
@@ -280,27 +280,27 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
 + (CGFloat)bubbleViewHeightForMessageModel:(MessageModel *)messageModel
 {
     switch (messageModel.type) {
-        case eMessageBodyType_Text:
+        case MessageBodyType_Text:
         {
             return [ZLChatTextBubbleView heightForBubbleWithObject:messageModel];
         }
             break;
-        case eMessageBodyType_Image:
+        case MessageBodyType_Image:
         {
             return [ZLChatImageBubbleView heightForBubbleWithObject:messageModel];
         }
             break;
-        case eMessageBodyType_Voice:
+        case MessageBodyType_Voice:
         {
             return [ZLChatAudioBubbleView heightForBubbleWithObject:messageModel];
         }
             break;
-        case eMessageBodyType_Location:
+        case MessageBodyType_Location:
         {
             return [ZLChatLocationBubbleView heightForBubbleWithObject:messageModel];
         }
             break;
-        case eMessageBodyType_Video:
+        case MessageBodyType_Video:
         {
             return [ZLChatVideoBubbleView heightForBubbleWithObject:messageModel];
         }

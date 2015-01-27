@@ -25,13 +25,13 @@
 
 #define KMESSAGEKEY @"message"
 
+extern NSString *const kRouterEventChatCellBubbleTapEventName;
 
 @interface ZLChatBaseBubbleView : UIView
 @property (nonatomic, strong) MessageModel *model;
 
 
 @property (nonatomic, strong) UIImageView *backImageView;
-//@property (nonatomic, strong) THProgressView *progressView;
 
 - (void)bubbleViewPressed:(id)sender;
 

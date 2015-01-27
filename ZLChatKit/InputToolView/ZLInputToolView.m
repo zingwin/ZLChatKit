@@ -7,7 +7,7 @@
 //
 
 #import "ZLInputToolView.h"
-@interface ZLInputToolView()<UITextViewDelegate,ZLFaceViewDelegate>
+@interface ZLInputToolView()<UITextViewDelegate,ZLFaceViewDelegate,ZLMultiViewDelegate>
 {
     CGFloat _previousTextViewContentHeight;//上一次inputTextView的contentSize.height
 }
@@ -315,6 +315,7 @@
     if (!self.moreView) {
         self.moreView = [[ZLMultiView alloc] initWithFrame:CGRectMake(0, (kVerticalPadding * 2 + kInputTextViewMinHeight), self.frame.size.width, kBottomContainViewHeight)];
         self.moreView.backgroundColor = [UIColor lightGrayColor];
+        ((ZLMultiView*)self.moreView).delegate = self;
         self.moreView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     }
     
@@ -617,6 +618,19 @@
     }
 }
 
+#pragma mark - zlmultiview delegate
+- (void)moreViewTakePicAction:(ZLMultiView *)moreView
+{
+    if ([self.delegate respondsToSelector:@selector(didPressedTakePictureAction)]) {
+        [self.delegate didPressedTakePictureAction];
+    }
+}
+- (void)moreViewPhotoAction:(ZLMultiView *)moreView
+{
+    if ([self.delegate respondsToSelector:@selector(didPressedSelectAlbumAction)]) {
+        [self.delegate didPressedSelectAlbumAction];
+    }
+}
 #pragma mark - public
 
 /**

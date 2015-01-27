@@ -19,7 +19,7 @@
     if (self) {
         self.backgroundColor = [UIColor whiteColor];
         
-        NSArray *ms = @[@"拍照",@"相册",@"位置",@"抖屏",@"微博"];
+        NSArray *ms = @[@"拍照",@"相册"];
         CGFloat space = (frame.size.width - (kmutilButtonWidth*3)) / 4.0f;
         CGFloat offx = space;
         CGFloat offy = 10;
@@ -48,11 +48,12 @@
     switch (sender.tag) {
         case 9090+0:
         {
-            NSLog(@"拍照被点击了");
+            [self takePicAction];
         }
             break;
         case 9090+1:
         {
+            [self photoAction];
         }
             break;
         default:

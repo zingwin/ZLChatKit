@@ -35,7 +35,6 @@ NSString *const kRouterEventChatCellBubbleTapEventName = @"kRouterEventChatCellB
 }
 
 #pragma mark - setter
-
 - (void)setModel:(MessageModel *)model
 {
     _model = model;
@@ -48,7 +47,6 @@ NSString *const kRouterEventChatCellBubbleTapEventName = @"kRouterEventChatCellB
 }
 
 #pragma mark - public
-
 + (CGFloat)heightForBubbleWithObject:(MessageModel *)object
 {
     return 30;
@@ -56,12 +54,6 @@ NSString *const kRouterEventChatCellBubbleTapEventName = @"kRouterEventChatCellB
 
 - (void)bubbleViewPressed:(id)sender
 {
-   // [self routerEventWithName:kRouterEventChatCellBubbleTapEventName userInfo:@{KMESSAGEKEY:self.model}];
+    [self routerEventWithName:kRouterEventChatCellBubbleTapEventName userInfo:@{KMESSAGEKEY:self.model}];
 }
-
-- (void)progress:(CGFloat)progress
-{
-    //[_progressView setProgress:progress animated:YES];
-}
-
 @end

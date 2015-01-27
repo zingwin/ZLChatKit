@@ -22,14 +22,12 @@ typedef enum{
 @property (nonatomic, strong) UIButton *videoButton;
 @property (nonatomic, strong) UIButton *audioCallButton;
 
-- (instancetype)initWithFrame:(CGRect)frame;// typw:(ChatMoreType)type;
-
-//- (void)setupSubviewsForType:(ChatMoreType)type;
+- (instancetype)initWithFrame:(CGRect)frame;
 @end
 
 @protocol ZLMultiViewDelegate <NSObject>
 
-@required
+@optional
 - (void)moreViewTakePicAction:(ZLMultiView *)moreView;
 - (void)moreViewPhotoAction:(ZLMultiView *)moreView;
 - (void)moreViewLocationAction:(ZLMultiView *)moreView;

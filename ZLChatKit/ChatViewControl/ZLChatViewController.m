@@ -13,6 +13,11 @@
 @interface ZLChatViewController ()<UITableViewDataSource, UITableViewDelegate,ZLInputToolViewDelegate>
 {
      dispatch_queue_t _messageQueue;
+    
+    UIMenuController *_menuController;
+    UIMenuItem *_copyMenuItem;
+    UIMenuItem *_deleteMenuItem;
+    NSIndexPath *_longPressIndexPath;
 }
 @property(nonatomic,strong) UITableView *chatTableView;
 @property(nonatomic,strong) ZLInputToolView *chatToolBar;
@@ -41,7 +46,6 @@
     chatTableView.backgroundColor = [UIColor clearColor];
     chatTableView.tableFooterView = [[UIView alloc] init];
     chatTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-//    chatTableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     lpgr.minimumPressDuration = .5;
     [chatTableView addGestureRecognizer:lpgr];
@@ -63,20 +67,20 @@
     
     MessageModel *model = nil;
     model = [[MessageModel alloc] init];
-    model.type = eMessageBodyType_Text;
+    model.type = MessageBodyType_Text;
     model.content = @"哈哈哈哈哈微笑[微笑][白眼][白眼][白眼][白眼]微笑[愉快][冷汗][投降]哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈";
     model.isSender = rand()%2;
     [self.messagesArr addObject:model];
     
     model = [[MessageModel alloc] init];
-    model.type = eMessageBodyType_Image;
+    model.type = MessageBodyType_Image;
     model.size = CGSizeMake(200, 200);
     model.image = [UIImage imageNamed:@"p3.jpg"];
     model.isSender = rand()%2;
         [self.messagesArr addObject:model];
 
     model = [[MessageModel alloc] init];
-    model.type = eMessageBodyType_Voice;
+    model.type = MessageBodyType_Voice;
     model.time = 4;
     model.isPlaying = NO;
     model.localPath = @"";
@@ -86,7 +90,8 @@
     [self.chatTableView reloadData];
     
 }
-#pragma mark - ZLInputToolViewDelegate
+
+#pragma mark - VoiceAction Delegate
 - (void)didStartRecordingVoiceAction:(UIView *)recordView
 {
     ZLRecordAnimationView *tmpView = (ZLRecordAnimationView *)recordView;
@@ -95,12 +100,37 @@
     [self.view bringSubviewToFront:recordView];
     
     NSLog(@"开始录音");
+    if ([self.delegate respondsToSelector:@selector(didComingRecordingVoiceStatus:)]) {
+        [self.delegate didComingRecordingVoiceStatus:VS_didStartRecordingVoice];
+    }
 }
 - (void)didFinishRecoingVoiceAction:(UIView *)recordView
 {
     NSLog(@"完成录音");
+    if ([self.delegate respondsToSelector:@selector(didComingRecordingVoiceStatus:)]) {
+        [self.delegate didComingRecordingVoiceStatus:VS_didFinishRecoingVoice];
+    }
     
 }
+- (void)didCancelRecordingVoiceAction:(UIView *)recordView
+{
+    if ([self.delegate respondsToSelector:@selector(didComingRecordingVoiceStatus:)]) {
+        [self.delegate didComingRecordingVoiceStatus:VS_didCancelRecordingVoice];
+    }
+}
+- (void)didDragOutsideAction:(UIView *)recordView
+{
+    if ([self.delegate respondsToSelector:@selector(didComingRecordingVoiceStatus:)]) {
+        [self.delegate didComingRecordingVoiceStatus:VS_pauseRecordVoice];
+    }
+}
+- (void)didDragInsideAction:(UIView *)recordView
+{
+    if ([self.delegate respondsToSelector:@selector(didComingRecordingVoiceStatus:)]) {
+        [self.delegate didComingRecordingVoiceStatus:VS_resumeRecordVoice];
+    }
+}
+#pragma mark - ZLInputToolViewDelegate
 - (void)didChangeFrameToHeight:(CGFloat)toHeight
 {
     [UIView animateWithDuration:0.3 animations:^{
@@ -116,13 +146,13 @@
     if (text && text.length <= 0) return;
     
     MessageModel *model = [[MessageModel alloc] init];
-    model.type = eMessageBodyType_Text;
+    model.type = MessageBodyType_Text;
     model.content = text;
     model.isSender = rand()%2;
-    [self addChatDataToMessage:model];
+    [self addMessage:model];
 }
 
--(void)addChatDataToMessage:(MessageModel *)message
+-(void)addMessage:(MessageModel *)message
 {
     __weak ZLChatViewController *weakSelf = self;
     dispatch_async(_messageQueue, ^{
@@ -141,9 +171,46 @@
         });
     });
 }
+static CGPoint  delayOffset = {0.0};
+// http://stackoverflow.com/a/11602040 Keep UITableView static when inserting rows at the top
+-(void)addMessages:(NSArray *)msges
+{
+     __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSMutableArray *msgestt = [NSMutableArray arrayWithArray:msges];
+        [msgestt addObjectsFromArray:weakSelf.messagesArr];
+        
+        delayOffset = weakSelf.chatTableView.contentOffset;
+        NSMutableArray *indexPaths = [NSMutableArray arrayWithCapacity:msges.count];
+        [msges enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
+            [indexPaths addObject:indexPath];
+            
+            delayOffset.y += [weakSelf calculateCellHeightWithMessage:[msgestt objectAtIndex:idx] atIndexPath:indexPath];
+        }];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [UIView setAnimationsEnabled:NO];
+            [weakSelf.chatTableView beginUpdates];
+            weakSelf.messagesArr = msgestt;
+            [weakSelf.chatTableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+            
+            [weakSelf.chatTableView setContentOffset:delayOffset animated:NO];
+            [weakSelf.chatTableView endUpdates];
+            [UIView setAnimationsEnabled:YES];
+        });
+    });
+}
+#pragma mark - ZLMultiView delegate
+-(void)didPressedSelectAlbumAction
+{
+    NSLog(@"选择相册");
+}
+-(void)didPressedTakePictureAction
+{
+    NSLog(@"拍照点击");
+}
 
 #pragma mark - UIResponder actions
-
 - (void)routerEventWithName:(NSString *)eventName userInfo:(NSDictionary *)userInfo
 {
     MessageModel *model = [userInfo objectForKey:KMESSAGEKEY];
@@ -152,8 +219,9 @@
     }
     else if ([eventName isEqualToString:kRouterEventAudioBubbleTapEventName]) {
         //[self chatAudioCellBubblePressed:model];
-        model.isPlaying = YES;
-        [self.chatTableView reloadData];
+        ZLChatAudioBubbleView *v = [userInfo objectForKey:@"view"];
+        [v startAudioAnimation];
+        [v stopAudioAnimation];
     }
     else if ([eventName isEqualToString:kRouterEventImageBubbleTapEventName]){
         //[self chatImageCellBubblePressed:model];
@@ -193,6 +261,17 @@
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MessageModel *message = [self.messagesArr objectAtIndex:indexPath.row];
+//    CGFloat cellHeight = 0;
+//    BOOL displayTimestamp = YES;
+//    if ([self.delegate respondsToSelector:@selector(shouldDisplayTimestampForRowAtIndexPath:)]) {
+//        displayTimestamp = [self.delegate shouldDisplayTimestampForRowAtIndexPath:indexPath];
+//    }
+//    cellHeight = [ZLChatTableViewCell cellHeightForRowAtIndexPath:indexPath withObject:message];
+//    return cellHeight + (displayTimestamp?kTimestampHeight:0);
+    return [self calculateCellHeightWithMessage:message atIndexPath:indexPath];
+}
+- (CGFloat)calculateCellHeightWithMessage:(MessageModel*)message atIndexPath:(NSIndexPath *)indexPath
+{
     CGFloat cellHeight = 0;
     BOOL displayTimestamp = YES;
     if ([self.delegate respondsToSelector:@selector(shouldDisplayTimestampForRowAtIndexPath:)]) {
@@ -214,18 +293,54 @@
 -(void)handleLongPress:(UILongPressGestureRecognizer *)recognizer
 {
     if (recognizer.state == UIGestureRecognizerStateBegan && [self.messagesArr count] > 0) {
-//        CGPoint location = [recognizer locationInView:self.chatTableView];
-//        NSIndexPath * indexPath = [self.chatTableView indexPathForRowAtPoint:location];
-//        id object = [self.messagesArr objectAtIndex:indexPath.row];
-//        if ([object isKindOfClass:[MessageModel class]]) {
-//            ZLChatTableViewCell *cell = (ZLChatTableViewCell *)[self.chatTableView cellForRowAtIndexPath:indexPath];
-//            [cell becomeFirstResponder];
-//            _longPressIndexPath = indexPath;
-//            [self showMenuViewController:cell.bubbleView andIndexPath:indexPath messageType:cell.messageModel.type];
-//        }
+        CGPoint location = [recognizer locationInView:self.chatTableView];
+        NSIndexPath * indexPath = [self.chatTableView indexPathForRowAtPoint:location];
+        id object = [self.messagesArr objectAtIndex:indexPath.row];
+        if ([object isKindOfClass:[MessageModel class]]) {
+            ZLChatTableViewCell *cell = (ZLChatTableViewCell *)[self.chatTableView cellForRowAtIndexPath:indexPath];
+            [cell becomeFirstResponder];
+            _longPressIndexPath = indexPath;
+            [self showMenuViewController:cell.bubbleView andIndexPath:indexPath messageType:cell.messageModel.type];
+        }
+    }
+}
+
+- (void)showMenuViewController:(UIView *)showInView andIndexPath:(NSIndexPath *)indexPath messageType:(MessageBodyType)messageType
+{
+    if (_menuController == nil) {
+        _menuController = [UIMenuController sharedMenuController];
+    }
+    if (_copyMenuItem == nil) {
+        _copyMenuItem = [[UIMenuItem alloc] initWithTitle:@"复制" action:@selector(copyMenuAction:)];
     }
 
+    if (messageType == MessageBodyType_Text) {
+        [_menuController setMenuItems:@[_copyMenuItem]];
+        [_menuController setTargetRect:showInView.frame inView:showInView.superview];
+        [_menuController setMenuVisible:YES animated:YES];
+    }
 }
+//如果需要显示菜单，必须实现以下2个方法
+-(BOOL) canBecomeFirstResponder{
+    return YES;
+}
+-(BOOL) canPerformAction:(SEL)action withSender:(id)sender{
+    if (action == @selector(copyMenuAction:)) {
+        return YES;
+    }
+    return NO; //隐藏系统默认的菜单项
+}
+- (void)copyMenuAction:(id)sender
+{
+    // todo by du. 复制
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    if (_longPressIndexPath.row > 0) {
+        MessageModel *model = [self.messagesArr objectAtIndex:_longPressIndexPath.row];
+        pasteboard.string = model.content;
+    }
+    _longPressIndexPath = nil;
+}
+
 -(void)keyBoardHidden
 {
     [self.chatToolBar endEditing:YES];

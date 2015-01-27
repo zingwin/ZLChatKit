@@ -95,7 +95,7 @@ NSString *const kRouterEventAudioBubbleTapEventName = @"kRouterEventAudioBubbleT
 {
     [super setModel:model];
     
-    _timeLabel.text = [NSString stringWithFormat:@"%d'",self.model.time];
+    _timeLabel.text = [NSString stringWithFormat:@"%d'",(int)self.model.time];
     
     if (self.model.isSender) {
         [_isReadView setHidden:YES];
@@ -125,7 +125,7 @@ NSString *const kRouterEventAudioBubbleTapEventName = @"kRouterEventAudioBubbleT
 
 -(void)bubbleViewPressed:(id)sender
 {
-   [self routerEventWithName:kRouterEventAudioBubbleTapEventName userInfo:@{KMESSAGEKEY:self.model}];
+   [self routerEventWithName:kRouterEventAudioBubbleTapEventName userInfo:@{KMESSAGEKEY:self.model,@"view":self}];
 }
 
 
